@@ -39,11 +39,11 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "user_controller.apps.UserControllerConfig",
     "rest_framework",
-    "frontend.apps.FrontendConfig",
     'rest_framework.authtoken',
 ]
 
 MIDDLEWARE = [
+    "middleware.jwt_middleware.JWTMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",

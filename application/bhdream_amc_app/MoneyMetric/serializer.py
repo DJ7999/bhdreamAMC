@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from moneymetric.dto import EquityDTO, PortfolioDTO
+from dto import EquityDTO, PortfolioDTO
 
 class EquityDTOSerializer(serializers.Serializer):
     equity_symbol = serializers.CharField(max_length=10)

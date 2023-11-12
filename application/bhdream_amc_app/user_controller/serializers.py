@@ -1,38 +1,81 @@
 from rest_framework import serializers
-from .models import UserProfile, Investment, EquitySymbol
 from django.contrib.auth.models import User
-import re
+from rest_framework import serializers
+from django.contrib.auth.models import User
+from rest_framework.authtoken.models import Token
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'first_name', 'last_name']
+        fields = ['id', 'username', 'password', 'email', 'first_name', 'last_name', 'is_active', 'is_staff', 'is_superuser', 'date_joined']
 
-class UserProfileSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = UserProfile
-        fields = ['id', 'user', 'user_type']
+# serializers.py
+# serializers.py
 
-class EquitySymbolSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = EquitySymbol
-        fields = ['id', 'symbol']
 
-class InvestmentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Investment
-        fields = ['id', 'customer', 'asset_type', 'principal_amount', 'purchase_price', 'shares', 'investment_date', 'maturity_date', 'equity_symbol']
+# BHDREAM_AMC_APP/serializers.py
 
 
 class SignUpSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields=['first_name', 'last_name', 'username', 'email', 'password']
+    is_staff = serializers.BooleanField(default=False)
+    is_superuser = serializers.BooleanField(default=False)
 
-class SignInSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields=['username', 'password']
-    def run_validation(self, data):
-        return data
+        fields = ['first_name', 'last_name', 'username', 'email', 'password', 'is_staff', 'is_superuser']
+
+    def create(self, validated_data):
+        username = validated_data['username']
+        email = validated_data['email']
+        password = validated_data['password']
+        is_staff = validated_data.get('is_staff', False)
+        is_superuser = validated_data.get('is_superuser', False)
+
+        # Check if the user already exists
+        user_exists = User.objects.filter(username=username).exists()
+
+        if user_exists:
+            raise serializers.ValidationError({'error': 'User already exists'})
+
+        # If the user doesn't exist, create a new one
+        user = User(**validated_data)
+        user.set_password(password)
+        user.is_staff = is_staff
+        user.is_superuser = is_superuser
+        user.save()
+
+        return user
+
+# app1/serializers.py
+
+
+class SignInSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    password = serializers.CharField(write_only=True)
+
+    def to_representation(self, instance):
+        # Customize the structure of the response
+        return {
+            'username': instance['username'],
+            'email': instance['email'],  # Include additional fields if needed
+            'token': instance['token'],
+        }
+
+# class UserProfileSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = UserProfile
+#         fields = ['id', 'user', 'user_type']
+
+# class EquitySymbolSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = EquitySymbol
+#         fields = ['id', 'symbol']
+
+# class InvestmentSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Investment
+#         fields = ['id', 'customer', 'asset_type', 'principal_amount', 'purchase_price', 'shares', 'investment_date', 'maturity_date', 'equity_symbol']
+
+
+
 

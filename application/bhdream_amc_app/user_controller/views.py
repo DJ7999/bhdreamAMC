@@ -19,6 +19,7 @@ from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 from .serializers import SignUpSerializer
 from rest_framework.authtoken.views import ObtainAuthToken
+from bhdream_amc_app.permissions import IsAdminUser,IsStaffUser
 # # Create your views here.
 # ##def signin(request):
 #     ##return HttpResponse("signin")
@@ -119,6 +120,7 @@ from jwt_utils import generate_jwt_token
 
 class SignUpView(APIView):
     serializer_class = SignUpSerializer
+    
 
     def post(self, request, format=None):
         serializer = self.serializer_class(data=request.data)
@@ -202,7 +204,7 @@ class ProtectedResourceView(APIView):
         }
 
         return Response(response_data)
-
+@permission_classes([IsStaffUser])
 class UserListView(APIView):
     def get(self, request):
         users = User.objects.all()
@@ -212,7 +214,22 @@ class UserListView(APIView):
     def post(self, request):
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            first_name = serializer.validated_data.get('first_name')
+            last_name = serializer.validated_data.get('last_name')
+            username = serializer.validated_data.get('username')
+            password = serializer.validated_data.get('password')
+            email = serializer.validated_data.get('email')
+            # Check if the user already exists
+            user_exists = User.objects.filter(username=username).exists()
+            if user_exists:
+                raise serializer.ValidationError({'error': 'User already exists'})
+            # If the user doesn't exist, create a new one
+            user = User.objects.create_user(username=username, email=email, password=password)
+            user.first_name = first_name
+            user.last_name = last_name
+            user.is_staff = serializer.validated_data.get('is_staff', False)
+            user.is_superuser = serializer.validated_data.get('is_superuser', False)
+            user.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     

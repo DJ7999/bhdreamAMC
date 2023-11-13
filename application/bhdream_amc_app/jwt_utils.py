@@ -12,6 +12,7 @@ def generate_jwt_token(user):
         'iat': datetime.utcnow(),
         'is_active': user.is_active,
         'is_staff': user.is_staff,
+        'is_superuser':user.is_superuser
     }
     secret_key = settings.SECRET_KEY
     token = jwt.encode(payload, secret_key, algorithm='HS256')
@@ -21,6 +22,7 @@ def decode_jwt_token(token):
     secret_key = settings.SECRET_KEY
     try:
         decoded_token = jwt.decode(token, secret_key, algorithms=["HS256"])
+       
         return decoded_token
     except jwt.ExpiredSignatureError:
         print("Token has expired")

@@ -1,20 +1,10 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from rest_framework import serializers
-from django.contrib.auth.models import User
-from rest_framework.authtoken.models import Token
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'username', 'password', 'email', 'first_name', 'last_name', 'is_active', 'is_staff', 'is_superuser', 'date_joined']
-
-# serializers.py
-# serializers.py
-
-
-# BHDREAM_AMC_APP/serializers.py
-
 
 class SignUpSerializer(serializers.ModelSerializer):
     is_staff = serializers.BooleanField(default=False)
@@ -45,9 +35,6 @@ class SignUpSerializer(serializers.ModelSerializer):
         user.save()
 
         return user
-
-# app1/serializers.py
-
 
 class SignInSerializer(serializers.Serializer):
     username = serializers.CharField()

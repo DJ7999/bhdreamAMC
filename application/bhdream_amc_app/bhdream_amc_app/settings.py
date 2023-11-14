@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "user_controller.apps.UserControllerConfig",
+    "portfolio_controller.apps.PortfolioControllerConfig",
     "rest_framework",
     'rest_framework.authtoken',
 ]

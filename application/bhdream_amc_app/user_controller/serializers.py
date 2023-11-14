@@ -6,6 +6,13 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id', 'username', 'password', 'email', 'first_name', 'last_name', 'is_active', 'is_staff', 'is_superuser', 'date_joined']
 
+class UpdateUserRoleSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField()
+    class Meta:
+        model = User
+        
+        fields = ['id','is_staff','is_superuser']
+
 class SignUpSerializer(serializers.ModelSerializer):
     is_staff = serializers.BooleanField(default=False)
     is_superuser = serializers.BooleanField(default=False)

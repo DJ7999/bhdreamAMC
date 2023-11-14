@@ -4,7 +4,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework import generics,status
 # from .serializers import UserProfileSerializer,EquitySymbolSerializer,InvestmentSerializer,UserSerializer,SignUpSerializer,SignInSerializer
 # from .models import UserProfile,EquitySymbol,Investment
-from .serializers import UserSerializer,SignUpSerializer,SignInSerializer
+from .serializers import UserSerializer,SignUpSerializer,SignInSerializer,UpdateUserRoleSerializer
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 ##
@@ -157,14 +157,6 @@ class SignUpView(APIView):
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
-
-# app1/views.py
-
-# app1/views.py
-
-
-
 class SignInView(APIView):
     serializer_class = SignInSerializer
 
@@ -186,25 +178,29 @@ class SignInView(APIView):
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class UpdateUserRoleView(APIView):
+    serializer_class = UpdateUserRoleSerializer
+    def post(self, request, format=None):
+        
+        serializer = self.serializer_class(data=request.data)
+        
+        if serializer.is_valid():
+            id = serializer.validated_data.get('id')
+            is_staff = serializer.validated_data['is_staff']
+            is_superuser = serializer.validated_data['is_superuser']
+
+            user = User.objects.filter(id=id).first()
+            if not user:
+                raise serializer.ValidationError({'error': 'User not found with id {id}'})
+            user.is_staff = is_staff
+            user.is_superuser = is_superuser
+            updated_user_serializer = UserSerializer(user)
+            serialized_user = updated_user_serializer.data
+            return Response({'message': 'success','user':serialized_user}, status=status.HTTP_202_ACCEPTED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-@permission_classes([IsAuthenticated])
-class ProtectedResourceView(APIView):
-    def get(self, request, format=None):
-        # The user is authenticated via the token if they reach this view
-        user = request.user  # This is the user associated with the token
 
-        # You can access the user's information and perform actions based on the user
-        response_data = {
-            "message": "This is a protected resource",
-            "user": {
-                "id": user.id,
-                "username": user.username,
-                "email": user.email
-            }
-        }
-
-        return Response(response_data)
-@permission_classes([IsStaffUser])
 class UserListView(APIView):
     def get(self, request):
         users = User.objects.all()

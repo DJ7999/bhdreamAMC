@@ -8,7 +8,7 @@ def get_dates():
     today_str = today.strftime('%Y-%m-%d')
     ten_years_ago_str = ten_years_ago.strftime('%Y-%m-%d')
     
-    return today_str, ten_years_ago_str
+    return  ten_years_ago_str,today_str
 
 def get_historical_data(symbol_list):
     start_date, end_date=get_dates()

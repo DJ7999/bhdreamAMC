@@ -1,12 +1,19 @@
-from user_controller.models import EquitySymbol  # Import the EquitySymbol model
+from portfolio_controller.models import Equity  # Import the EquitySymbol model
 
 class EquityDTO:
-    def __init__(self, equity_symbol, amount_invested,):
-        self.equity_symbol = equity_symbol  # equity_symbol should be an instance of EquitySymbol
+    # def __init__(self, equity_symbol, amount_invested):
+    #     self.equity_symbol = equity_symbol  # equity_symbol should be an instance of EquitySymbol
+    #     self.amount_invested = amount_invested
+    #     self.cagr = None
+    #     self.risk = None
+    #     self.optimal_weight=None
+    
+    def __init__(self, equity_symbol, amount_invested, cagr=None, risk=None, optimal_weight=None):
+        self.equity_symbol = equity_symbol
         self.amount_invested = amount_invested
-        self.cagr = None
-        self.risk = None
-        self.optimal_weight=None
+        self.cagr = cagr
+        self.risk = risk
+        self.optimal_weight = optimal_weight
 
     def get_equity_symbol(self):
         return self.equity_symbol
@@ -27,7 +34,7 @@ class EquityDTO:
         self.optimal_weight = optimal_weight
 
 class PortfolioDTO:
-    def __init__(self, equity_data_list):
+    def __init__(self, equity_data_list=None):
         self.equities = equity_data_list  # equities should be a list of EquityDTO instances
         self.has_metrics = False
         self.is_optimised=False
@@ -35,7 +42,8 @@ class PortfolioDTO:
         self.current_risk=None
         self.optimised_return=None
         self.optimised_risk=None
-        self.total_portfolio_value=sum(equity.amount_invested for equity in equity_data_list)
+        self.total_portfolio_value=sum(equity.amount_invested for equity in equity_data_list) if  equity_data_list is not None else None
+
     def get_equities(self):
         return self.equities
     
@@ -94,8 +102,21 @@ class PortfolioDTO:
             new_cagr = update.value
             for equity in self.equities:
                 if equity.get_equity_symbol() == equity_symbol:
-                    equity.set_cagr(new_cagr)
+                    equity.set_risk(new_cagr)
                     break
+
+    @classmethod
+    def from_dict(cls, data):
+        instance = cls()
+        instance.equities = [EquityDTO(**equity_data) for equity_data in data.get('equities', [])]
+        instance.has_metrics = data.get('has_metrics', False)
+        instance.is_optimised = data.get('is_optimised', False)
+        instance.current_return = data.get('current_return')
+        instance.current_risk = data.get('current_risk')
+        instance.optimised_return = data.get('optimised_return')
+        instance.optimised_risk = data.get('optimised_risk')
+        instance.total_portfolio_value = data.get('total_portfolio_value')
+        return instance
     
 class KeyValuePairDTO:
     def __init__(self, key, value):

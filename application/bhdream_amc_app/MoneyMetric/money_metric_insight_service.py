@@ -1,27 +1,31 @@
-from historical_data_engine import get_historical_data
-from dto import KeyValuePairDTO
+from .historical_data_engine import get_historical_data
+from .dto import KeyValuePairDTO,EquityDTO,PortfolioDTO
 import numpy as np
 from scipy.optimize import minimize
+from django.db.models import F, ExpressionWrapper, fields
+from django.db.models import Sum
 
 def populate_portfolio_metrics(portfolio):
     symbol_list=portfolio.get_equity_symbols()
     historical_data=get_historical_data(symbol_list).Close
     returns, risks  =calculate_metrics(historical_data)
-    portfolio_return, portfolio_risk=current_portfolio_risk_return(portfolio.get_equities(),portfolio.get_total_portfolio_value())
     portfolio.set_cagrs(returns)
     portfolio.set_risks(risks)
     portfolio.Enable_metrics()
+    portfolio_return, portfolio_risk=current_portfolio_risk_return(portfolio.get_equities(),portfolio.get_total_portfolio_value())
     portfolio.set_current_return(portfolio_return)
     portfolio.set_current_risk(portfolio_risk)
     return portfolio
 
+
+
 def current_portfolio_risk_return(equity_list, total_portfolio_value):
     # Calculate the weights of each equity in the portfolio
-    weights = [equity.amount_invested / total_portfolio_value for equity in equity_list]
-
-    # Calculate the expected returns of each equity
-    expected_returns = [equity.cagr for equity in equity_list]
-
+    weights = [float(equity.amount_invested / total_portfolio_value) for equity in equity_list]
+    
+    # # Calculate the expected returns of each equity
+    #expected_returns = [equity.cagr for equity in equity_list]
+    expected_returns = [float(equity.cagr) for equity in equity_list]
     # Calculate the covariance matrix (assuming independent assets)
     risk_values = [equity.risk for equity in equity_list]
     cov_matrix = np.diag(np.square(risk_values))
@@ -29,10 +33,12 @@ def current_portfolio_risk_return(equity_list, total_portfolio_value):
     # Calculate the portfolio return
     portfolio_return = np.dot(weights, expected_returns)
 
-    # Calculate the portfolio risk (standard deviation)
+    # # Calculate the portfolio risk (standard deviation)
     portfolio_risk = np.sqrt(np.dot(weights, np.dot(cov_matrix, weights)))
 
     return portfolio_return, portfolio_risk
+    
+    
 
 def calculate_metrics(historical_data):
     log_ret=np.log(historical_data / historical_data.shift(1))
@@ -44,7 +50,7 @@ def calculate_metrics(historical_data):
     return cagr_list,risk_list
 
 def get_optimised_portfolio(portfolio):
-    if not portfolio.is_metrics_enabled():
+    if not portfolio.has_metrics:
         portfolio = populate_portfolio_metrics(portfolio)
     optimal_equity_list,optimised_return,optimised_risk=optimize_portfolio(equity_data_list=portfolio.get_equities())
     portfolio.set_equities(optimal_equity_list)
@@ -84,7 +90,7 @@ def optimize_portfolio(equity_data_list, risk_free_rate=0.03):
     # Step 5: Extract the optimal weights
     optimal_weights = result.x
     for i, equity in enumerate(equity_data_list):
-        equity.weight = optimal_weights[i]
+        equity.optimal_weight = optimal_weights[i]
     
     portfolio_return = np.sum(optimal_weights * expected_returns)
 
@@ -94,3 +100,28 @@ def optimize_portfolio(equity_data_list, risk_free_rate=0.03):
     # Return the optimal weights, return, and risk
     
     return equity_data_list,portfolio_return,portfolio_risk
+
+def generate_portfolio(investment_list):
+    
+    #equities_list = investment_list.values_list('equity', flat=True).distinct()
+    equities_list = investment_list.values('equity__id','equity__symbol').distinct()
+    equities_array = list(equities_list)
+    equity_dtos = []
+
+    for equity in equities_list:
+    # Assuming you have a function or method to calculate the amount_invested for each equity symbol
+        filtered_investment = investment_list.filter(equity=equity['equity__id'])  # Replace with your actual logic
+        
+        filtered_investment_list = filtered_investment.annotate(total_amount=ExpressionWrapper(F('shares') * F('purchase_price'), output_field=fields.DecimalField()))
+    # Create an EquityDTO instance
+        total_amount_invested = filtered_investment_list.aggregate(sum_total_amount=Sum('total_amount'))['sum_total_amount']
+        print(total_amount_invested)
+        equity_dto = EquityDTO(equity_symbol=equity['equity__symbol'], amount_invested=total_amount_invested)
+        
+    # Append the EquityDTO instance to the list
+        equity_dtos.append(equity_dto)
+    
+    portfolio=PortfolioDTO(equity_data_list=equity_dtos)
+    return populate_portfolio_metrics(portfolio=portfolio)
+    
+    

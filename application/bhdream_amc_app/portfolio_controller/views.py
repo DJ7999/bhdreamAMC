@@ -5,7 +5,9 @@ from .serializers import EquitySerializer,InvestmentSerializer
 from rest_framework.response import Response
 from django.db.models import Q
 from rest_framework import status
-
+from MoneyMetric.money_metric_insight_service import generate_portfolio,get_optimised_portfolio
+from MoneyMetric.serializer import PortfolioDTOSerializer
+from MoneyMetric.dto import PortfolioDTO
 # Create your views here.
 class EquityView(APIView):
     def get(self, request):
@@ -86,12 +88,37 @@ class InvestmentView(APIView):
         except Equity.DoesNotExist:
             return Response({"error": "investment not found"}, status=status.HTTP_404_NOT_FOUND)
 
+class PortfolioView(APIView):
+    def get(self, request):
+        user_id = request.headers.get('user')  # Assuming the header key is 'id'
 
+        if not user_id:
+            return Response({"error": "User ID not provided"}, status=status.HTTP_400_BAD_REQUEST)
 
+        try:
+            user_id = int(user_id)
+        except ValueError:
+            return Response({"error": "Invalid User ID "}, status=status.HTTP_400_BAD_REQUEST)
 
+        investments = Investment.objects.filter(user_id=user_id)
+        print(vars(investments.first()))
+        portfolio= generate_portfolio(investment_list=investments)
+        serializer = PortfolioDTOSerializer(portfolio)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
+class PortfolioOptimizationView(APIView):
+    def post(self, request, *args, **kwargs):
+        data = request.data
 
+        # Deserialize the input data using the PortfolioDTOSerializer
+        serializer = PortfolioDTOSerializer(data=data)
+        if serializer.is_valid():
+            # Use the validated data to create a PortfolioDTO instance
+            portfolio_dto = PortfolioDTO.from_dict(serializer.validated_data)
+            optimized_portfolio=get_optimised_portfolio(portfolio=portfolio_dto)
+            # Now, you can use the 'portfolio_dto' object as needed in your application logic
+            serializer = PortfolioDTOSerializer(optimized_portfolio)
 
-
-
-
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response({"error": "Invalid data provided"}, status=status.HTTP_400_BAD_REQUEST)

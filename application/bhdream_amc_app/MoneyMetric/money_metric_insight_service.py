@@ -4,6 +4,7 @@ import numpy as np
 from scipy.optimize import minimize
 from django.db.models import F, ExpressionWrapper, fields
 from django.db.models import Sum
+import math
 
 def populate_portfolio_metrics(portfolio):
     symbol_list=portfolio.get_equity_symbols()
@@ -123,5 +124,28 @@ def generate_portfolio(investment_list):
     
     portfolio=PortfolioDTO(equity_data_list=equity_dtos)
     return populate_portfolio_metrics(portfolio=portfolio)
+
+def calculate_future_value_sip(monthly_contribution, cagr, duration_months):
     
+    annual_rate = cagr  # Convert CAGR to a decimal
+    monthly_rate = annual_rate / 12  # Convert annual rate to monthly rate
+
+    future_value = monthly_contribution * (((1 + monthly_rate)**duration_months - 1) / monthly_rate)
+    return round(future_value, 2)
+
+def calculate_monthly_contribution(future_value, cagr, duration_months):
+    annual_rate = cagr   # Convert CAGR to a decimal
+    monthly_rate = annual_rate / 12  # Convert annual rate to monthly rate
+
+    # Calculate the monthly contribution
+    monthly_contribution = (future_value * monthly_rate) / (((1 + monthly_rate)**duration_months) - 1)
+    return round(monthly_contribution, 2)
+
+def calculate_duration(future_value, monthly_contribution, cagr):
+    annual_rate = cagr   # Convert CAGR to a decimal
+    monthly_rate = annual_rate / 12  # Convert annual rate to monthly rate
+
+    # Calculate the duration
+    duration_months = math.log(1 + (future_value * monthly_rate) / monthly_contribution) / math.log(1 + monthly_rate)
+    return math.ceil(duration_months)  
     

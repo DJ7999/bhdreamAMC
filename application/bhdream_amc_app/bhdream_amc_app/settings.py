@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "user_controller.apps.UserControllerConfig",
     "portfolio_controller.apps.PortfolioControllerConfig",
+    "wealthwish_controller.apps.WealthwishControllerConfig",
     "rest_framework",
     'rest_framework.authtoken',
 ]

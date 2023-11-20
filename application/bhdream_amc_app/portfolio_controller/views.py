@@ -44,6 +44,8 @@ class EquityView(APIView):
 
 class InvestmentView(APIView):
     def post(self, request, format=None):
+        data=request.data
+        data['user']=request.decoded_token.get('user_id')
         serializer = InvestmentSerializer(data=request.data)
         try:
             if serializer.is_valid():
@@ -65,7 +67,7 @@ class InvestmentView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     def get(self, request):
-        user_id = request.headers.get('user')  # Assuming the header key is 'id'
+        user_id = request.decoded_token.get('user_id')  # Assuming the header key is 'id'
 
         if not user_id:
             return Response({"error": "User ID not provided"}, status=status.HTTP_400_BAD_REQUEST)
@@ -101,7 +103,6 @@ class PortfolioView(APIView):
             return Response({"error": "Invalid User ID "}, status=status.HTTP_400_BAD_REQUEST)
 
         investments = Investment.objects.filter(user_id=user_id)
-        print(vars(investments.first()))
         portfolio= generate_portfolio(investment_list=investments)
         serializer = PortfolioDTOSerializer(portfolio)
         return Response(serializer.data, status=status.HTTP_200_OK)

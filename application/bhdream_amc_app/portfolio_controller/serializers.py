@@ -6,6 +6,11 @@ class EquitySerializer(serializers.ModelSerializer):
         model = Equity
         fields = ['id','title', 'symbol']
 
+class GetEquitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Equity
+        fields = ['id','title', 'symbol','price']
+
 class InvestmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Investment

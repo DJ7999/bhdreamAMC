@@ -8,10 +8,14 @@ import math
 
 def populate_portfolio_metrics(portfolio):
     symbol_list=portfolio.get_equity_symbols()
-    historical_data=get_historical_data(symbol_list).Close
-    returns, risks  =calculate_metrics(historical_data)
+    
+    historical_data=get_historical_data(symbol_list)
+    print(historical_data)
+    print("historical_data")
+    returns, risks,latest_prices  =calculate_metrics(historical_data)
     portfolio.set_cagrs(returns)
     portfolio.set_risks(risks)
+    portfolio.set_latest_prices(latest_prices)
     portfolio.Enable_metrics()
     portfolio_return, portfolio_risk=current_portfolio_risk_return(portfolio.get_equities(),portfolio.get_total_portfolio_value())
     portfolio.set_current_return(portfolio_return)
@@ -42,13 +46,15 @@ def current_portfolio_risk_return(equity_list, total_portfolio_value):
     
 
 def calculate_metrics(historical_data):
+    latest_prices = historical_data.tail(1)
     log_ret=np.log(historical_data / historical_data.shift(1))
     annual_mu_df=log_ret.mean()*12
     sigma=log_ret.std()
     annual_std_df=sigma*np.sqrt(12)
     risk_list=[KeyValuePairDTO(index, value) for index, value in annual_std_df.items()]
     cagr_list=[KeyValuePairDTO(index, np.exp(value) - 1) for index, value in annual_mu_df.items()]
-    return cagr_list,risk_list
+    latest_price_list=[KeyValuePairDTO(index, value) for index, value in latest_prices.items()]
+    return cagr_list,risk_list,latest_price_list
 
 def get_optimised_portfolio(portfolio):
     if not portfolio.has_metrics:
@@ -112,12 +118,11 @@ def generate_portfolio(investment_list):
     for equity in equities_list:
     # Assuming you have a function or method to calculate the amount_invested for each equity symbol
         filtered_investment = investment_list.filter(equity=equity['equity__id'])  # Replace with your actual logic
-        
+        total_shares = sum(obj.shares for obj in filtered_investment)
         filtered_investment_list = filtered_investment.annotate(total_amount=ExpressionWrapper(F('shares') * F('purchase_price'), output_field=fields.DecimalField()))
     # Create an EquityDTO instance
         total_amount_invested = filtered_investment_list.aggregate(sum_total_amount=Sum('total_amount'))['sum_total_amount']
-        print(total_amount_invested)
-        equity_dto = EquityDTO(equity_symbol=equity['equity__symbol'], amount_invested=total_amount_invested)
+        equity_dto = EquityDTO(equity_symbol=equity['equity__symbol'], amount_invested=total_amount_invested,shares=total_shares)
         
     # Append the EquityDTO instance to the list
         equity_dtos.append(equity_dto)

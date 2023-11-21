@@ -8,12 +8,14 @@ class EquityDTO:
     #     self.risk = None
     #     self.optimal_weight=None
     
-    def __init__(self, equity_symbol, amount_invested, cagr=None, risk=None, optimal_weight=None):
+    def __init__(self, equity_symbol, amount_invested, cagr=None, risk=None, optimal_weight=None,new_price=None,shares=None):
         self.equity_symbol = equity_symbol
         self.amount_invested = amount_invested
         self.cagr = cagr
         self.risk = risk
         self.optimal_weight = optimal_weight
+        self.new_price=new_price
+        self.shares=shares
 
     def get_equity_symbol(self):
         return self.equity_symbol
@@ -29,6 +31,12 @@ class EquityDTO:
 
     def set_risk(self, risk):
         self.risk = risk
+    
+    def set_risk(self, risk):
+        self.risk = risk
+
+    def set_latest_price(self,new_price):
+        self.new_price = new_price
     
     def set_optimal_weight(self, optimal_weight):
         self.optimal_weight = optimal_weight
@@ -103,6 +111,15 @@ class PortfolioDTO:
             for equity in self.equities:
                 if equity.get_equity_symbol() == equity_symbol:
                     equity.set_risk(new_cagr)
+                    break
+    
+    def set_latest_prices(self, latest_prices):
+        for update in latest_prices:
+            equity_symbol = update.key
+            new_price = update.value
+            for equity in self.equities:
+                if equity.get_equity_symbol() == equity_symbol:
+                    equity.set_latest_price(new_price)
                     break
 
     @classmethod

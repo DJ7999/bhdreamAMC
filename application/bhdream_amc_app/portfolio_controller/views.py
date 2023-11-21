@@ -92,7 +92,7 @@ class InvestmentView(APIView):
 
 class PortfolioView(APIView):
     def get(self, request):
-        user_id = request.headers.get('user')  # Assuming the header key is 'id'
+        user_id = request.decoded_token.get('user_id')  # Assuming the header key is 'id'
 
         if not user_id:
             return Response({"error": "User ID not provided"}, status=status.HTTP_400_BAD_REQUEST)

@@ -1,5 +1,6 @@
 import yfinance as yf
 from datetime import datetime, timedelta
+import pandas as pd
 
 def get_dates():
     today = datetime.now()
@@ -11,9 +12,14 @@ def get_dates():
     return  ten_years_ago_str,today_str
 
 def get_historical_data(symbol_list):
+    if len(symbol_list) == 0:
+        return pd.DataFrame()
     start_date, end_date=get_dates()
     historical_data=yf.download(tickers=symbol_list,start=start_date,end=end_date,interval="1mo")
-    return historical_data
+    if len(symbol_list) == 1:
+        historical_data = historical_data[['Close']].rename(columns={'Close': symbol_list[0]})
+        return historical_data
+    return historical_data.Close
 
 def get_latest_closing_price(symbol):
     # Get today's date

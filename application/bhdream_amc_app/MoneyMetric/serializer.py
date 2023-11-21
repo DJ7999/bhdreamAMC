@@ -8,6 +8,8 @@ class EquityDTOSerializer(serializers.Serializer):
     cagr = serializers.FloatField(allow_null=True)
     risk = serializers.FloatField(allow_null=True)
     optimal_weight = serializers.FloatField(allow_null=True)
+    new_price=serializers.FloatField(allow_null=True)
+    shares=serializers.IntegerField(allow_null=True)
 
 class PortfolioDTOSerializer(serializers.Serializer):
     equities = EquityDTOSerializer(many=True)

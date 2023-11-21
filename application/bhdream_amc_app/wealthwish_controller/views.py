@@ -12,7 +12,7 @@ from datetime import date
 class GoalView(APIView):
     def get(self, request):
         user_id=request.decoded_token['user_id']
-        print(user_id)
+        
         goals = Goal.objects.filter(user_id=user_id)
         serializer = GoalSerializer(goals, many=True)
         return Response(serializer.data)
@@ -23,8 +23,7 @@ class GoalView(APIView):
         investments=Investment.objects.filter(user_id=data['user'])
         portfolio=generate_portfolio(investment_list=investments)
         current_return=portfolio.current_return
-        print(f"return considered")
-        print(current_return)
+        
         if 'monthly_contribution' not in data or data['monthly_contribution'] is None:
             data['monthly_contribution']=calculate_monthly_contribution(cagr=current_return,
                                                                         future_value=data['goal_amount'],

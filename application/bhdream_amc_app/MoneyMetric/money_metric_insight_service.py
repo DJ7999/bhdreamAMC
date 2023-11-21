@@ -10,8 +10,6 @@ def populate_portfolio_metrics(portfolio):
     symbol_list=portfolio.get_equity_symbols()
     
     historical_data=get_historical_data(symbol_list)
-    print(historical_data)
-    print("historical_data")
     returns, risks,latest_prices  =calculate_metrics(historical_data)
     portfolio.set_cagrs(returns)
     portfolio.set_risks(risks)

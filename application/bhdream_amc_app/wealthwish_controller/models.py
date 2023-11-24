@@ -11,10 +11,9 @@ class Goal(models.Model):
     active_date = models.DateField(null=True, blank=True)
 
 class FIRE(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     duration = models.PositiveIntegerField()
     expected_inflation = models.DecimalField(max_digits=5, decimal_places=2, default=6.0)
     todays_yearly_requirement = models.DecimalField(max_digits=10, decimal_places=2)
     FIRE_amount = models.DecimalField(max_digits=10, decimal_places=2)
-    monthly_contribution = models.DecimalField(max_digits=10, decimal_places=2)
 

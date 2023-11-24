@@ -6,7 +6,13 @@ class GoalSerializer(serializers.ModelSerializer):
         model = Goal
         fields = ['id', 'user', 'name', 'duration_in_months', 'monthly_contribution', 'goal_amount', 'is_active', 'active_date']
 
-class FIRESerializer(serializers.ModelSerializer):
+class FIREResponseSerializer(serializers.ModelSerializer):
     class Meta:
         model = FIRE
-        fields = ['id', 'user', 'duration', 'expected_inflation', 'todays_yearly_requirement', 'FIRE_amount', 'monthly_contribution']
+        fields = ['user', 'duration', 'todays_yearly_requirement', 'FIRE_amount', 'expected_inflation']
+
+class FIRERequestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FIRE
+        fields = ['user', 'duration', 'todays_yearly_requirement']
+

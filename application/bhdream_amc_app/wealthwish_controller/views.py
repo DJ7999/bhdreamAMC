@@ -1,10 +1,10 @@
 from django.shortcuts import render
 from .models import Goal,FIRE
 from rest_framework.views import APIView
-from .serializer import GoalSerializer, FIRESerializer
+from .serializer import GoalSerializer, FIRERequestSerializer,FIREResponseSerializer
 from rest_framework.response import Response
 from portfolio_controller.models import Investment
-from MoneyMetric.money_metric_insight_service import generate_portfolio,calculate_future_value_sip,calculate_duration,calculate_monthly_contribution
+from MoneyMetric.money_metric_insight_service import generate_portfolio,calculate_future_value_sip,calculate_duration,calculate_monthly_contribution,future_value
 from rest_framework import status
 from datetime import date
 # Create your views here.
@@ -19,6 +19,9 @@ class GoalView(APIView):
     
     def post(self, request):
         data=request.data
+        data["user"]=request.decoded_token.get('user_id')
+        print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+        print(data)
         serializer = GoalSerializer(data=data)
         investments=Investment.objects.filter(user_id=data['user'])
         portfolio=generate_portfolio(investment_list=investments)
@@ -132,3 +135,50 @@ class ActivateGoalView(APIView):
 
         except Goal.DoesNotExist:
             return Response({"error": "Goal not found"}, status=status.HTTP_404_NOT_FOUND)
+
+
+class FIREView(APIView):
+    def get(self, request):
+        user_id=request.decoded_token['user_id']
+        
+        fire = FIRE.objects.filter(user=user_id)
+        if(not fire.exists()):
+            return Response(None,status=status.HTTP_204_NO_CONTENT)
+        
+        return Response(FIREResponseSerializer(fire.first()).data)
+    
+    def post(self, request):
+        data=request.data
+        data["user"]=request.decoded_token.get('user_id')
+        print(data)
+        serializer = FIRERequestSerializer(data=data)
+        #investments=Fil.objects.filter(user_id=data['user'])
+        #portfolio=generate_portfolio(investment_list=investments)
+        #current_return=portfolio.current_return
+        
+        print(serializer.is_valid())
+        if serializer.is_valid():
+            user = serializer.validated_data.get('user')
+            duration = serializer.validated_data.get('duration')
+            todays_yearly_requirement = serializer.validated_data.get('todays_yearly_requirement')
+            
+            f_v=future_value(principal=float(todays_yearly_requirement),time=duration)
+            fire_amount=f_v/0.05                              #considering user will be able to generate atleast or more 5% after tax on corpus
+            fire_plan = FIRE.objects.filter(user=user).first()
+
+            if not fire_plan:
+                fire_plan = FIRE.objects.create(
+                    user=user,
+                    duration=duration,
+                    expected_inflation=6,
+                    todays_yearly_requirement=todays_yearly_requirement,
+                    FIRE_amount=fire_amount
+                )
+                fire_plan.save()
+            fire_plan.duration=duration
+            fire_plan.todays_yearly_requirement=todays_yearly_requirement
+            fire_plan.FIRE_amount=fire_amount
+            # Now fire_plan is an instance of the FIRE model, and you can pass it to the serializer
+            response_serializer = FIREResponseSerializer(fire_plan)
+            
+            return Response(response_serializer.data, status=status.HTTP_201_CREATED)

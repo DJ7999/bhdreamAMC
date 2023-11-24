@@ -139,9 +139,12 @@ def calculate_future_value_sip(monthly_contribution, cagr, duration_months):
 def calculate_monthly_contribution(future_value, cagr, duration_months):
     annual_rate = cagr   # Convert CAGR to a decimal
     monthly_rate = annual_rate / 12  # Convert annual rate to monthly rate
-
+    denominator = (1 + monthly_rate) ** duration_months
+    denominator=denominator-1
+    denominator=denominator/monthly_rate
+    denominator=denominator*(1+monthly_rate)
     # Calculate the monthly contribution
-    monthly_contribution = (future_value * monthly_rate) / (((1 + monthly_rate)**duration_months) - 1)
+    monthly_contribution = (future_value) / denominator
     return round(monthly_contribution, 2)
 
 def calculate_duration(future_value, monthly_contribution, cagr):
@@ -151,4 +154,19 @@ def calculate_duration(future_value, monthly_contribution, cagr):
     # Calculate the duration
     duration_months = math.log(1 + (future_value * monthly_rate) / monthly_contribution) / math.log(1 + monthly_rate)
     return math.ceil(duration_months)  
-    
+
+def future_value(principal,time, rate=0.06):
+    """
+    Calculate the future value using the compound interest formula with yearly compounding.
+
+    Args:
+    - principal: the initial investment (principal amount)
+    - rate: the annual interest rate (as a decimal)
+    - time: the number of years
+
+    Returns:
+    The future value of the investment.
+    """
+    r = rate # Convert percentage to decimal
+    f_v = principal * (1 + r)**time
+    return f_v

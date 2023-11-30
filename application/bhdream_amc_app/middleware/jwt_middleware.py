@@ -9,7 +9,7 @@ class JWTMiddleware:
 
     def __call__(self, request):
         # Your logic to exclude certain views from token validation
-        excluded_views = ['signup', 'signin','user']
+        excluded_views = ['signup', 'signin']
         path = request.path_info.lstrip('/').lower()
 
         if any(view in path for view in excluded_views):

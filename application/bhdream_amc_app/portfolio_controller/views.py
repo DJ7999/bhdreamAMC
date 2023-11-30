@@ -5,7 +5,7 @@ from .serializers import EquitySerializer,InvestmentSerializer
 from rest_framework.response import Response
 from django.db.models import Q
 from rest_framework import status
-from MoneyMetric.money_metric_insight_service import generate_portfolio,get_optimised_portfolio
+from MoneyMetric.money_metric_insight_service import generate_portfolio,get_optimised_portfolio,get_performance
 from MoneyMetric.serializer import PortfolioDTOSerializer
 from MoneyMetric.dto import PortfolioDTO
 # Create your views here.
@@ -107,6 +107,21 @@ class PortfolioView(APIView):
         serializer = PortfolioDTOSerializer(portfolio)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+class AUMView(APIView):
+    def get(self, request):
+        investments = Investment.objects
+        portfolio= generate_portfolio(investment_list=investments)
+        serializer = PortfolioDTOSerializer(portfolio)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class PerformanceView(APIView):
+    def post(self, request, *args, **kwargs):
+        data = request.data
+        result=get_performance(data)
+        
+        return Response(result, status=status.HTTP_201_CREATED)
+        
+        
 class PortfolioOptimizationView(APIView):
     def post(self, request, *args, **kwargs):
         data = request.data

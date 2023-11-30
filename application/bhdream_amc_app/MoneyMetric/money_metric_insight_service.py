@@ -5,6 +5,7 @@ from scipy.optimize import minimize
 from django.db.models import F, ExpressionWrapper, fields
 from django.db.models import Sum
 import math
+import pandas as pd
 
 def populate_portfolio_metrics(portfolio):
     symbol_list=portfolio.get_equity_symbols()
@@ -170,3 +171,29 @@ def future_value(principal,time, rate=0.06):
     r = rate # Convert percentage to decimal
     f_v = principal * (1 + r)**time
     return f_v
+
+def get_performance(portfolios):
+    symbols= list(portfolios['current_portfolio'].keys())
+    historical_data=get_historical_data(symbol_list=symbols)
+    # num_rows_to_select = int(0.2 * len(historical_data))
+    # historical_data = historical_data.tail(num_rows_to_select)
+    backward_filled_df = historical_data.fillna(method='bfill')
+    normalized_df = backward_filled_df / backward_filled_df.iloc[0]
+    multiplier_dict = portfolios['current_portfolio']
+
+
+    df_current_portfolio = normalized_df * normalized_df.columns.map(multiplier_dict)
+    df_current_portfolio['Total'] = df_current_portfolio.sum(axis=1)
+    
+    multiplier_dict = portfolios['optimised_portfolio']
+    result=pd.DataFrame()
+    result['current_portfolio']=df_current_portfolio.Total.copy()
+   
+
+    df_optimised_portfolio = normalized_df * normalized_df.columns.map(multiplier_dict)
+    df_optimised_portfolio['Total'] = df_optimised_portfolio.sum(axis=1)
+    result['optimised_portfolio']=df_optimised_portfolio.Total.copy()
+    result.index = result.index.strftime('%Y-%m-%d')
+    json_data_list = result.reset_index().to_dict(orient='records')
+    return json_data_list
+

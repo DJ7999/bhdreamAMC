@@ -25,8 +25,8 @@ def decode_jwt_token(token):
        
         return decoded_token
     except jwt.ExpiredSignatureError:
-        print("Token has expired")
+        
         return None
     except jwt.InvalidTokenError:
-        print("Invalid token")
+        
         return None

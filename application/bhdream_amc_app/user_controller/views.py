@@ -172,12 +172,13 @@ class SignInView(APIView):
             if user and user.check_password(password):
                 # Authentication successful, generate JWT token
                 token = generate_jwt_token(user)
-                return Response({'token': token}, status=status.HTTP_200_OK)
+                return Response({'token': token,"is_staff":user.is_staff,"is_superuser":user.is_superuser,"first_name":user.first_name}, status=status.HTTP_200_OK)
 
             return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+@permission_classes([IsAdminUser])
 class UpdateUserRoleView(APIView):
     serializer_class = UpdateUserRoleSerializer
     def post(self, request, format=None):
@@ -194,6 +195,7 @@ class UpdateUserRoleView(APIView):
                 raise serializer.ValidationError({'error': 'User not found with id {id}'})
             user.is_staff = is_staff
             user.is_superuser = is_superuser
+            user.save()
             updated_user_serializer = UserSerializer(user)
             serialized_user = updated_user_serializer.data
             return Response({'message': 'success','user':serialized_user}, status=status.HTTP_202_ACCEPTED)

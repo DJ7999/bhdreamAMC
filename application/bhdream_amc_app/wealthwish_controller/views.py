@@ -20,8 +20,7 @@ class GoalView(APIView):
     def post(self, request):
         data=request.data
         data["user"]=request.decoded_token.get('user_id')
-        print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-        print(data)
+        
         serializer = GoalSerializer(data=data)
         investments=Investment.objects.filter(user_id=data['user'])
         portfolio=generate_portfolio(investment_list=investments)
@@ -150,13 +149,13 @@ class FIREView(APIView):
     def post(self, request):
         data=request.data
         data["user"]=request.decoded_token.get('user_id')
-        print(data)
+        
         serializer = FIRERequestSerializer(data=data)
         #investments=Fil.objects.filter(user_id=data['user'])
         #portfolio=generate_portfolio(investment_list=investments)
         #current_return=portfolio.current_return
         
-        print(serializer.is_valid())
+       
         if serializer.is_valid():
             user = serializer.validated_data.get('user')
             duration = serializer.validated_data.get('duration')
@@ -178,6 +177,7 @@ class FIREView(APIView):
             fire_plan.duration=duration
             fire_plan.todays_yearly_requirement=todays_yearly_requirement
             fire_plan.FIRE_amount=fire_amount
+            fire_plan.save()
             # Now fire_plan is an instance of the FIRE model, and you can pass it to the serializer
             response_serializer = FIREResponseSerializer(fire_plan)
             

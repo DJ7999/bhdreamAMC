@@ -13,7 +13,7 @@ class IsAdminUser(permissions.BasePermission):
 class IsStaffUser(IsAdminUser):
     def has_permission(self, request, view):
         try:
-            print (request.decoded_token)
+           
             is_staff=request.decoded_token.get('is_staff')
             return is_staff or super().has_permission(request, view)
         except User.DoesNotExist:

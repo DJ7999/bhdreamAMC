@@ -1,6 +1,6 @@
-<mxfile host="app.diagrams.net" modified="2023-10-28T17:18:17.702Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36" etag="N428EzuUphLB5RHtHCOV" version="22.0.8" type="device">
+<mxfile host="app.diagrams.net" modified="2023-11-30T03:54:40.581Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36" etag="4YFjq74IbjQGNJjz5Wst" version="22.1.5" type="device">
   <diagram name="Page-1" id="4lEkWUVy1VVtrQNJi2iB">
-    <mxGraphModel dx="1050" dy="534" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+    <mxGraphModel dx="1050" dy="522" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -50,13 +50,16 @@
         <mxCell id="2bevjAJKMJdt6_6JYhVt-24" value="Data base" style="swimlane;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="620" y="114" width="200" height="115" as="geometry" />
         </mxCell>
-        <mxCell id="Ncdaa-sAqrYBmP8-Mcvt-4" value="User&lt;br&gt;Userprofile&lt;br&gt;investment&lt;br&gt;equitysymbol&lt;br&gt;goal&lt;br&gt;firePlan" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="2bevjAJKMJdt6_6JYhVt-24" vertex="1">
-          <mxGeometry x="50" y="20.5" width="90" height="100" as="geometry" />
+        <mxCell id="Ncdaa-sAqrYBmP8-Mcvt-4" value="User&lt;br&gt;investment&lt;br&gt;equitysymbol&lt;br&gt;goal&lt;br&gt;firePlan" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="2bevjAJKMJdt6_6JYhVt-24" vertex="1">
+          <mxGeometry x="55" y="20" width="90" height="90" as="geometry" />
         </mxCell>
         <mxCell id="Ncdaa-sAqrYBmP8-Mcvt-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="2bevjAJKMJdt6_6JYhVt-18" target="2bevjAJKMJdt6_6JYhVt-24" edge="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="640" y="160" as="targetPoint" />
           </mxGeometry>
+        </mxCell>
+        <mxCell id="QnbBWJWJhSh4PPfgCm1R-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;sketch=1;hachureGap=4;jiggle=2;curveFitting=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.75;exitY=0;exitDx=0;exitDy=0;entryX=0.75;entryY=1;entryDx=0;entryDy=0;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=16;" edge="1" parent="1" source="Ncdaa-sAqrYBmP8-Mcvt-8" target="2bevjAJKMJdt6_6JYhVt-24">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="Ncdaa-sAqrYBmP8-Mcvt-8" value="Moneymetric" style="swimlane;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="660" y="272.5" width="170" height="270" as="geometry" />
@@ -79,13 +82,16 @@
         <mxCell id="Ncdaa-sAqrYBmP8-Mcvt-14" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="2bevjAJKMJdt6_6JYhVt-20" target="Ncdaa-sAqrYBmP8-Mcvt-8" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="GsYMVkBJt3CzwP905dxk-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="Ncdaa-sAqrYBmP8-Mcvt-21" target="Ncdaa-sAqrYBmP8-Mcvt-8">
+        <mxCell id="GsYMVkBJt3CzwP905dxk-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="Ncdaa-sAqrYBmP8-Mcvt-21" target="Ncdaa-sAqrYBmP8-Mcvt-8" edge="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="620" y="410" as="targetPoint" />
           </mxGeometry>
         </mxCell>
+        <mxCell id="QnbBWJWJhSh4PPfgCm1R-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;sketch=1;hachureGap=4;jiggle=2;curveFitting=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=1;entryDx=0;entryDy=0;fontFamily=Architects Daughter;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DArchitects%2BDaughter;fontSize=16;" edge="1" parent="1" source="Ncdaa-sAqrYBmP8-Mcvt-21" target="2bevjAJKMJdt6_6JYhVt-24">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
         <mxCell id="Ncdaa-sAqrYBmP8-Mcvt-21" value="WealthWish" style="swimlane;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-          <mxGeometry x="345" y="390" width="270" height="110" as="geometry" />
+          <mxGeometry x="345" y="420" width="270" height="110" as="geometry" />
         </mxCell>
         <mxCell id="Ncdaa-sAqrYBmP8-Mcvt-22" value="fire planner" style="rounded=1;whiteSpace=wrap;html=1;" parent="Ncdaa-sAqrYBmP8-Mcvt-21" vertex="1">
           <mxGeometry x="10" y="30" width="120" height="60" as="geometry" />
